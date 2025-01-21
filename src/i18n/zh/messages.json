@@ -1,0 +1,26 @@
+{
+    "extName": {
+        "message": "REFinder"
+    },
+    "extDescription": {
+        "message": "一个搜索插件"
+    },
+    "mainName": {
+        "message": "主页"
+    },
+    "mainLabel": {
+        "message": "正则表达式"
+    },
+    "mainFlagG": {
+        "message": "全局匹配"
+    },
+    "mainFlagM": {
+        "message": "多行匹配"
+    },
+    "mainFlagI": {
+        "message": "不区分大小写"
+    },
+    "mainSearch": {
+        "message": "查找"
+    }
+}
