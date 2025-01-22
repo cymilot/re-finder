@@ -29,7 +29,7 @@ const config: webpack.Configuration = {
   mode: "production",
   entry: {
     main: {
-      import: path.resolve(src, "index.tsx"),
+      import: path.resolve(src, "main.tsx"),
     },
     content: {
       import: path.resolve(src, "content.ts"),

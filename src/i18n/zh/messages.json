@@ -22,5 +22,29 @@
     },
     "mainSearch": {
         "message": "查找"
+    },
+    "mainEmptyError": {
+        "message": "输入不能为空"
+    },
+    "mainSearchError": {
+        "message": "搜索失败"
+    },
+    "mainEmptyResult": {
+        "message": "无结果"
+    },
+    "mainTabNotFound": {
+        "message": "没有活动中的页面"
+    },
+    "contentSuccess1": {
+        "message": "已找到"
+    },
+    "contentSuccess2": {
+        "message": "个匹配字符串"
+    },
+    "contentNotFound": {
+        "message": "没有匹配的行动"
+    },
+    "contentError": {
+        "message": "出现错误"
     }
 }

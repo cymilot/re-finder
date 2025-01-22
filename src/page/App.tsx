@@ -21,9 +21,8 @@ import React from "react";
 const App = () => {
   React.useEffect(() => {
     chrome.storage.local.get(["lastRegex", "lastResult"], (data) => {
-      if (chrome.runtime.lastError || !data.lastRegex || !data.lastResult) return;
-      setInputValue(data.lastRegex);
-      setResultValue(data.lastResult);
+      setInputValue(data.lastRegex || "");
+      setResultValue(data.lastResult || "");
     });
   }, []);
 
@@ -48,7 +47,7 @@ const App = () => {
 
     const cleanedInputValue = inputValue.trim();
     if (cleanedInputValue === "") {
-      setResultValue("Input cannot be empty.");
+      setResultValue(chrome.i18n.getMessage("mainEmptyError"));
       return;
     }
 
@@ -67,21 +66,24 @@ const App = () => {
           },
           (res) => {
             if (chrome.runtime.lastError) {
-              setResultValue("Failed to send message to tab.");
+              setResultValue(
+                `${chrome.i18n.getMessage("mainSearchError")}: ${
+                  chrome.runtime.lastError.message
+                }`
+              );
             } else {
-              setResultValue(res?.result || "No result.");
+              setResultValue(res?.result || chrome.i18n.getMessage("mainEmptyResult"));
             }
           }
         );
       } else {
-        setResultValue("No active tab found.");
+        setResultValue(chrome.i18n.getMessage("mainTabNotFound"));
       }
-    } catch (error) {
-      console.error("Error in handleSearch:", error);
-      setResultValue("An error occurred during search.");
+    } catch (error: any) {
+      setResultValue(`${chrome.i18n.getMessage("mainSearchError")}: ${error.message}`);
     }
 
-    chrome.storage.local.set({
+    await chrome.storage.local.set({
       lastRegex: cleanedInputValue,
       lastResult: resultValue,
     });

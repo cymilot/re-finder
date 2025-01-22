@@ -6,7 +6,7 @@ const getIframeDOM = (iframeNode: HTMLIFrameElement) => {
       return iframeNode.contentWindow.document;
     }
   } catch (error: any) {
-    console.warn(`Iframe access error: ${error.message}.`);
+    console.warn(`${chrome.i18n.getMessage("contentError")}: ${error.message}`);
   }
   return null;
 };
@@ -54,7 +54,9 @@ const highlight = (dom: Document, regex: RegExp) => {
     try {
       range.surroundContents(highlightBg);
     } catch (error: any) {
-      console.warn(`Highlight error: ${error.message} .`);
+      console.warn(
+        `${chrome.i18n.getMessage("contentError")}: ${error.message}`
+      );
     }
   }
 
@@ -77,7 +79,11 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       }
     }
 
-    sendResponse({ result: `Found ${count} items.` });
+    sendResponse({
+      result: `${chrome.i18n.getMessage(
+        "contentSuccess1"
+      )} ${count} ${chrome.i18n.getMessage("contentSuccess2")}`,
+    });
   } else if (request.action === "clear") {
     clearHighlight(document);
 
@@ -87,6 +93,6 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       if (doc) clearHighlight(doc);
     }
   } else {
-    sendResponse({ result: "No match action." });
+    sendResponse({ result: chrome.i18n.getMessage("contentNotFound") });
   }
 });
