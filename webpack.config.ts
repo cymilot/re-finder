@@ -2,17 +2,8 @@ import path from "path";
 import fs from "fs";
 import webpack from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
-import { WebpackManifestPlugin } from "webpack-manifest-plugin";
+import { WebpackManifestPlugin, Manifest } from "webpack-manifest-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
-
-interface ManifestObject {
-  manifest_version: number;
-  name: string;
-  version: string;
-  description: string;
-  action: Object;
-  content_scripts: Array<Object>;
-}
 
 const src = path.resolve(__dirname, "src");
 const build = path.resolve(__dirname, "build");
@@ -91,7 +82,7 @@ const config: webpack.Configuration = {
     new WebpackManifestPlugin({
       publicPath: "",
       generate(_seed, files, _entries) {
-        const manifest: Partial<ManifestObject> = JSON.parse(
+        const manifest: Manifest = JSON.parse(
           fs.readFileSync(
             path.resolve(src, "public/manifest.json"),
             "utf-8"
@@ -102,7 +93,7 @@ const config: webpack.Configuration = {
           for (const [key, value] of Object.entries(content_injects)) {
             if (key === fixName) {
               value["js"].push(e.path);
-              manifest["content_scripts"]?.push(value);
+              manifest["content_scripts"].push(value);
             }
           }
         });

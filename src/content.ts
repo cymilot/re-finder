@@ -55,7 +55,7 @@ const highlight = (dom: Document, regex: RegExp) => {
       range.surroundContents(highlightBg);
     } catch (error: any) {
       console.warn(
-        `${chrome.i18n.getMessage("contentError")}: ${error.message}`
+        `${chrome.i18n.getMessage("actionError")}: ${error.message}`
       );
     }
   }
@@ -81,8 +81,8 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
     sendResponse({
       result: `${chrome.i18n.getMessage(
-        "contentSuccess1"
-      )} ${count} ${chrome.i18n.getMessage("contentSuccess2")}`,
+        "searchSuccess1"
+      )} ${count} ${chrome.i18n.getMessage("searchSuccess2")}`,
     });
   } else if (request.action === "clear") {
     clearHighlight(document);
@@ -93,6 +93,6 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       if (doc) clearHighlight(doc);
     }
   } else {
-    sendResponse({ result: chrome.i18n.getMessage("contentNotFound") });
+    sendResponse({ result: chrome.i18n.getMessage("actionNotFound") });
   }
 });

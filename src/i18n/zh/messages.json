@@ -5,46 +5,49 @@
     "extDescription": {
         "message": "一个搜索插件"
     },
-    "mainName": {
+    "homeName": {
         "message": "主页"
     },
-    "mainLabel": {
+    "homeInputLabel": {
         "message": "正则表达式"
     },
-    "mainFlagG": {
+    "homeInputFlagG": {
         "message": "全局匹配"
     },
-    "mainFlagM": {
+    "homeInputFlagM": {
         "message": "多行匹配"
     },
-    "mainFlagI": {
+    "homeInputFlagI": {
         "message": "不区分大小写"
     },
-    "mainSearch": {
+    "homeSearch": {
         "message": "查找"
     },
-    "mainEmptyError": {
+    "settingName": {
+        "message": "设置"
+    },
+    "emptyError": {
         "message": "输入不能为空"
     },
-    "mainSearchError": {
+    "searchError": {
         "message": "搜索失败"
     },
-    "mainEmptyResult": {
-        "message": "无结果"
-    },
-    "mainTabNotFound": {
+    "tabNotFoundError": {
         "message": "没有活动中的页面"
     },
-    "contentSuccess1": {
+    "emptyResult": {
+        "message": "无结果"
+    },
+    "searchSuccess1": {
         "message": "已找到"
     },
-    "contentSuccess2": {
+    "searchSuccess2": {
         "message": "个匹配字符串"
     },
-    "contentNotFound": {
+    "actionNotFound": {
         "message": "没有匹配的行动"
     },
-    "contentError": {
+    "actionError": {
         "message": "出现错误"
     }
 }
