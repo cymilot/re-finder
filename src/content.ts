@@ -6,7 +6,7 @@ const getIframeDOM = (iframeNode: HTMLIFrameElement) => {
       return iframeNode.contentWindow.document;
     }
   } catch (error: any) {
-    console.warn(`${chrome.i18n.getMessage("contentError")}: ${error.message}`);
+    console.warn(`${chrome.i18n.getMessage("errRunAction")}: ${error.message}`);
   }
   return null;
 };
@@ -54,9 +54,7 @@ const highlight = (dom: Document, regex: RegExp) => {
     try {
       range.surroundContents(highlightBg);
     } catch (error: any) {
-      console.warn(
-        `${chrome.i18n.getMessage("actionError")}: ${error.message}`
-      );
+      console.warn(`${chrome.i18n.getMessage("errRunAction")}: ${error.message}`);
     }
   }
 
@@ -81,8 +79,8 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
     sendResponse({
       result: `${chrome.i18n.getMessage(
-        "searchSuccess1"
-      )} ${count} ${chrome.i18n.getMessage("searchSuccess2")}`,
+        "sucSearch1"
+      )} ${count} ${chrome.i18n.getMessage("sucSearch2")}`,
     });
   } else if (request.action === "clear") {
     clearHighlight(document);
@@ -93,6 +91,6 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       if (doc) clearHighlight(doc);
     }
   } else {
-    sendResponse({ result: chrome.i18n.getMessage("actionNotFound") });
+    sendResponse({ result: chrome.i18n.getMessage("errActionNotFound") });
   }
 });

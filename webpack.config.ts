@@ -76,7 +76,7 @@ const config: webpack.Configuration = {
   plugins: [
     new webpack.ProgressPlugin(),
     new HtmlWebpackPlugin({
-      template: path.resolve(src, "public/index.html"),
+      template: path.resolve(__dirname, "public/index.html"),
       chunks: ["main"],
     }),
     new WebpackManifestPlugin({
@@ -84,7 +84,7 @@ const config: webpack.Configuration = {
       generate(_seed, files, _entries) {
         const manifest: Manifest = JSON.parse(
           fs.readFileSync(
-            path.resolve(src, "public/manifest.json"),
+            path.resolve(__dirname, "public/manifest.json"),
             "utf-8"
           )
         );

@@ -5,49 +5,46 @@
     "extDescription": {
         "message": "一个搜索插件"
     },
-    "homeName": {
+    "_": {
         "message": "主页"
     },
-    "homeInputLabel": {
-        "message": "正则表达式"
-    },
-    "homeInputFlagG": {
-        "message": "全局匹配"
-    },
-    "homeInputFlagM": {
-        "message": "多行匹配"
-    },
-    "homeInputFlagI": {
-        "message": "不区分大小写"
-    },
-    "homeSearch": {
-        "message": "查找"
-    },
-    "settingName": {
+    "_setting": {
         "message": "设置"
     },
-    "emptyError": {
+    "flagG": {
+        "message": "全局匹配"
+    },
+    "flagM": {
+        "message": "多行匹配"
+    },
+    "flagI": {
+        "message": "不区分大小写"
+    },
+    "labelRegExp": {
+        "message": "正则表达式"
+    },
+    "labelSearch": {
+        "message": "查找"
+    },
+    "errEmptyInput": {
         "message": "输入不能为空"
     },
-    "searchError": {
+    "errSearchFailed": {
         "message": "搜索失败"
     },
-    "tabNotFoundError": {
+    "errEmptyTabs": {
         "message": "没有活动中的页面"
     },
-    "emptyResult": {
-        "message": "无结果"
+    "errRunAction": {
+        "message": "出现错误"
     },
-    "searchSuccess1": {
-        "message": "已找到"
-    },
-    "searchSuccess2": {
-        "message": "个匹配字符串"
-    },
-    "actionNotFound": {
+    "errActionNotFound": {
         "message": "没有匹配的行动"
     },
-    "actionError": {
-        "message": "出现错误"
+    "sucSearch1": {
+        "message": "已找到"
+    },
+    "sucSearch2": {
+        "message": "个匹配字符串"
     }
 }

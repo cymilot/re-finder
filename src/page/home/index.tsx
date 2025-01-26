@@ -22,13 +22,6 @@ const Home = () => {
     flagI: true,
   });
 
-  React.useEffect(() => {
-    chrome.storage.local.get(["lastRegex", "lastResult"], (data) => {
-      setInputValue(data.lastRegex || "");
-      setResultValue(data.lastResult || "");
-    });
-  });
-
   const handleSearch = async () => {
     const flag: string[] = [];
     if (flagValue.flagG) flag.push("g");
@@ -37,7 +30,7 @@ const Home = () => {
 
     const cleanedInputValue = inputValue.trim();
     if (cleanedInputValue === "") {
-      setResultValue(chrome.i18n.getMessage("emptyError"));
+      setResultValue(chrome.i18n.getMessage("errEmptyInput"));
       return;
     }
 
@@ -57,23 +50,21 @@ const Home = () => {
           (res) => {
             if (chrome.runtime.lastError) {
               setResultValue(
-                `${chrome.i18n.getMessage("searchError")}: ${
+                `${chrome.i18n.getMessage("errSearchFailed")}: ${
                   chrome.runtime.lastError.message
                 }`
               );
             } else {
-              setResultValue(
-                res?.result || chrome.i18n.getMessage("emptyResult")
-              );
+              setResultValue(res?.result || "");
             }
           }
         );
       } else {
-        setResultValue(chrome.i18n.getMessage("tabNotFoundError"));
+        setResultValue(chrome.i18n.getMessage("errEmptyTabs"));
       }
     } catch (error: any) {
       setResultValue(
-        `${chrome.i18n.getMessage("searchError")}: ${error.message}`
+        `${chrome.i18n.getMessage("errSearchFailed")}: ${error.message}`
       );
     }
 
@@ -98,12 +89,22 @@ const Home = () => {
     await chrome.storage.local.remove(["lastRegex", "lastResult"]);
   };
 
-  const handleChecked = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+  const handleChecked = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
     setFlagValue({
       ...flagValue,
       [event.target.name]: checked,
     });
   };
+
+  React.useEffect(() => {
+    chrome.storage.local.get(["lastRegex", "lastResult"], (data) => {
+      setInputValue(data.lastRegex || "");
+      setResultValue(data.lastResult || "");
+    });
+  });
 
   return (
     <List>
@@ -114,7 +115,7 @@ const Home = () => {
               <TextField
                 autoFocus
                 fullWidth
-                label={chrome.i18n.getMessage("homeInputLabel")}
+                label={chrome.i18n.getMessage("labelRegExp")}
                 variant="standard"
                 value={inputValue}
                 onChange={(event) => {
@@ -136,7 +137,7 @@ const Home = () => {
                   name="flagG"
                 />
               }
-              label={chrome.i18n.getMessage("homeInputFlagG")}
+              label={chrome.i18n.getMessage("flagG")}
             />
             <FormControlLabel
               control={
@@ -146,7 +147,7 @@ const Home = () => {
                   name="flagM"
                 />
               }
-              label={chrome.i18n.getMessage("homeInputFlagM")}
+              label={chrome.i18n.getMessage("flagM")}
             />
             <FormControlLabel
               control={
@@ -156,7 +157,7 @@ const Home = () => {
                   name="flagI"
                 />
               }
-              label={chrome.i18n.getMessage("homeInputFlagI")}
+              label={chrome.i18n.getMessage("flagI")}
             />
           </FormControl>
         }
@@ -164,7 +165,7 @@ const Home = () => {
       <ListItem
         children={
           <ListItemText
-            primary={<Typography component="p" children={resultValue} />}
+            primary={<Typography children={resultValue} />}
           />
         }
       />
@@ -175,7 +176,7 @@ const Home = () => {
               <Button
                 variant="contained"
                 onClick={handleSearch}
-                children={chrome.i18n.getMessage("homeSearch")}
+                children={chrome.i18n.getMessage("labelSearch")}
               />
             }
           />

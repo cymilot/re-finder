@@ -1,11 +1,46 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 const Setting = () => {
   return (
-    <Box>
-      <Typography>"Hello"</Typography>
-    </Box>
+    <List>
+      <ListItem
+        children={<ListItemText primary={<Typography children="setColor" />} />}
+        secondaryAction={
+          <TextField variant="standard" sx={{ width: "60px" }} />
+        }
+      />
+      <ListItem
+        children={<ListItemText primary={<Typography children="setColor" />} />}
+        secondaryAction={
+          <TextField variant="standard" sx={{ width: "60px" }} />
+        }
+      />
+      <ListItem
+        children={<ListItemText primary={<Typography children="setColor" />} />}
+        secondaryAction={
+          <TextField variant="standard" sx={{ width: "60px" }} />
+        }
+      />
+      <ListItem
+        children={<ListItemText primary={<Typography children="setColor" />} />}
+        secondaryAction={
+          <TextField variant="standard" sx={{ width: "60px" }} />
+        }
+      />
+      <ListItem
+        children={<ListItemText primary={<Typography children="setColor" />} />}
+        secondaryAction={
+          <TextField variant="standard" sx={{ width: "60px" }} />
+        }
+      />
+    </List>
   );
 };
 

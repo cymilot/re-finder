@@ -17,7 +17,8 @@ import Home from "./home";
 import Setting from "./setting";
 
 const App = () => {
-  const [pagePath, setPagePath] = React.useState("/");
+  const [pathValue, setPathValue] = React.useState("/");
+  const [nameValue, setNameValue] = React.useState("");
 
   const navigate = useNavigate();
   const theme = createTheme({
@@ -27,8 +28,9 @@ const App = () => {
   });
 
   React.useEffect(() => {
-    navigate(pagePath);
-  }, [pagePath]);
+    navigate(pathValue);
+    setNameValue(chrome.i18n.getMessage(pathValue.replace("/", "_")));
+  }, [pathValue]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -36,28 +38,30 @@ const App = () => {
         sx={{
           bgcolor: "background.default",
           color: "text.primary",
-          width: "300px",
+          minWidth: "300px",
         }}>
         <AppBar position="static">
-          <Toolbar children={<Typography children="test" />} />
+          <Toolbar children={<Typography children={nameValue} />} />
         </AppBar>
-        <Routes>
-          <Route index path="/" element={<Home />} />
-          <Route path="/setting" element={<Setting />} />
-        </Routes>
+        <Box sx={{ height: "350px", overflowX: "hidden", overflowY: "auto" }}>
+          <Routes>
+            <Route index path="/" element={<Home />} />
+            <Route path="/setting" element={<Setting />} />
+          </Routes>
+        </Box>
         <BottomNavigation
           showLabels
-          value={pagePath}
-          onChange={(_event, newIndex) => {
-            setPagePath(newIndex);
+          value={pathValue}
+          onChange={(_event, newPath) => {
+            setPathValue(newPath);
           }}>
           <BottomNavigationAction
-            label={chrome.i18n.getMessage("homeName")}
+            label={chrome.i18n.getMessage("_")}
             icon={<HomeIcon />}
             value="/"
           />
           <BottomNavigationAction
-            label={chrome.i18n.getMessage("settingName")}
+            label={chrome.i18n.getMessage("_setting")}
             icon={<SettingIcon />}
             value="/setting"
           />
