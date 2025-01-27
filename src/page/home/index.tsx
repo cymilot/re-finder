@@ -14,76 +14,93 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const Home = () => {
-  const [inputValue, setInputValue] = React.useState("");
-  const [resultValue, setResultValue] = React.useState("");
-  const [flagValues, setFlagValues] = React.useState({
+  const [input, setInput] = React.useState("");
+  const [result, setResult] = React.useState("");
+  const [flagStates, setFlagStates] = React.useState({
     flagG: true,
     flagM: false,
     flagI: true,
   });
 
-  const handleSearch = React.useCallback(async () => {
-    const flags: string[] = [];
-    if (flagValues.flagG) flags.push("g");
-    if (flagValues.flagM) flags.push("m");
-    if (flagValues.flagI) flags.push("i");
+const handleSearch = React.useCallback(async () => {
+  const flags: string[] = [];
+  if (flagStates.flagG) flags.push("g");
+  if (flagStates.flagM) flags.push("m");
+  if (flagStates.flagI) flags.push("i");
 
-    const cleanedInputValue = inputValue.trim();
-    if (cleanedInputValue === "") {
-      setResultValue(chrome.i18n.getMessage("errEmptyInput"));
-      return;
-    }
+  const cleanedInputValue = input.trim();
+  if (cleanedInputValue === "") {
+    setResult(chrome.i18n.getMessage("errEmptyInput"));
+    return;
+  }
 
-    try {
-      const tabs = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      if (tabs.length > 0 && tabs[0].id !== undefined) {
-        chrome.tabs.sendMessage(
-          tabs[0].id,
-          {
-            action: "search",
-            searchInput: cleanedInputValue,
-            flags: flags,
-          },
-          (res) => {
-            if (chrome.runtime.lastError) {
-              setResultValue(
-                `${chrome.i18n.getMessage("errSearchFailed")}: ${
-                  chrome.runtime.lastError.message
-                }`
-              );
-            } else {
-              setResultValue(res?.result || "");
-            }
+  try {
+    const tabs = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    if (tabs.length > 0 && tabs[0].id !== undefined) {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        {
+          action: "search",
+          searchInput: cleanedInputValue,
+          flags: flags,
+        },
+        (res) => {
+          if (chrome.runtime.lastError) {
+            const errorMessage = `${chrome.i18n.getMessage(
+              "errSearchFailed"
+            )}: ${chrome.runtime.lastError.message}`;
+            setResult(errorMessage);
+            chrome.storage.local.set({
+              lastRegExp: input,
+              lastResult: errorMessage,
+            });
+          } else {
+            const resultMessage = res?.result || "";
+            setResult(resultMessage);
+            chrome.storage.local.set({
+              lastRegExp: input,
+              lastResult: resultMessage,
+            });
           }
-        );
-      } else {
-        setResultValue(chrome.i18n.getMessage("errEmptyTabs"));
-      }
-    } catch (error: any) {
-      setResultValue(
-        `${chrome.i18n.getMessage("errSearchFailed")}: ${error.message}`
+        }
       );
+    } else {
+      const errorMessage = chrome.i18n.getMessage("errEmptyTabs");
+      setResult(errorMessage);
+      chrome.storage.local.set({
+        lastRegExp: input,
+        lastResult: errorMessage,
+      });
     }
-  }, [inputValue, flagValues]);
+  } catch (error: any) {
+    const errorMessage = `${chrome.i18n.getMessage("errSearchFailed")}: ${
+      error.message
+    }`;
+    setResult(errorMessage);
+    chrome.storage.local.set({
+      lastRegExp: input,
+      lastResult: errorMessage,
+    });
+  }
+}, [input, flagStates]);
 
   const handleClear = React.useCallback(async () => {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tabs.length > 0 && tabs[0].id !== undefined) {
       chrome.tabs.sendMessage(tabs[0].id, { action: "clear" });
     }
-
-    setInputValue("");
-    setResultValue("");
-
-    await chrome.storage.local.remove(["lastRegex", "lastResult"]);
+    chrome.storage.local.remove(["lastRegExp", "lastResult"]).then(() => {
+      setInput("");
+      setResult("");
+    });
   }, []);
 
   const handleChecked = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-      setFlagValues((prev) => ({
+      setFlagStates((prev) => ({
         ...prev,
         [event.target.name]: checked,
       }));
@@ -92,11 +109,11 @@ const Home = () => {
   );
 
   React.useEffect(() => {
-    chrome.storage.local.set({
-      lastRegex: inputValue,
-      lastResult: resultValue,
+    chrome.storage.local.get(["lastRegExp", "lastResult"], (data) => {
+      if (input.length === 0 && data.lastRegExp) setInput(data.lastRegExp);
+      if (result.length === 0 && data.lastResult) setResult(data.lastResult);
     });
-  }, [inputValue, resultValue]);
+  });
 
   return (
     <List>
@@ -107,8 +124,8 @@ const Home = () => {
             fullWidth
             label={chrome.i18n.getMessage("labelRegExp")}
             variant="standard"
-            value={inputValue}
-            onChange={(event) => setInputValue(event.target.value)}
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
           />
         </ListItemText>
       </ListItem>
@@ -117,7 +134,7 @@ const Home = () => {
           <FormControlLabel
             control={
               <Checkbox
-                checked={flagValues.flagG}
+                checked={flagStates.flagG}
                 onChange={handleChecked}
                 name="flagG"
               />
@@ -127,7 +144,7 @@ const Home = () => {
           <FormControlLabel
             control={
               <Checkbox
-                checked={flagValues.flagM}
+                checked={flagStates.flagM}
                 onChange={handleChecked}
                 name="flagM"
               />
@@ -137,7 +154,7 @@ const Home = () => {
           <FormControlLabel
             control={
               <Checkbox
-                checked={flagValues.flagI}
+                checked={flagStates.flagI}
                 onChange={handleChecked}
                 name="flagI"
               />
@@ -148,7 +165,7 @@ const Home = () => {
       </ListItem>
       <ListItem>
         <ListItemText>
-          <Typography>{resultValue}</Typography>
+          <Typography>{result}</Typography>
         </ListItemText>
       </ListItem>
       <ListItem>

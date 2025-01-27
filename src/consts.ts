@@ -22,7 +22,7 @@ export const AppContext = React.createContext<AppContextProp>({
   },
   dialogState: false,
   setDialogState: (_value: boolean) => {
-    console.error("Function setIsDialogOpen is not definded.");
+    console.error("Function setDialogState is not definded.");
   },
   dialogContents: {
     dialogTitle: "",

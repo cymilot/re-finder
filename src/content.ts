@@ -1,5 +1,3 @@
-import { defaultBgColor } from "./consts";
-
 const getIframeDOM = (iframeNode: HTMLIFrameElement) => {
   try {
     if (iframeNode.contentDocument) {
@@ -55,7 +53,7 @@ const highlight = (
 
   for (const range of ranges) {
     const highlightBg = document.createElement("mark");
-    highlightBg.style.backgroundColor = setting.bgColor || defaultBgColor;
+    highlightBg.style.backgroundColor = setting.bgColor;
     highlightBg.className = "highlighting";
     try {
       range.surroundContents(highlightBg);
@@ -75,7 +73,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       const setting = await chrome.storage.local.get(["bgColor"]);
       const pattern = request.searchInput;
       const flags = request.flags.join("");
-      const regex = RegExp(pattern, flags);
+      const regex = new RegExp(pattern, flags);
 
       let count = highlight(document, regex, setting);
 

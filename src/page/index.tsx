@@ -37,7 +37,7 @@ const App = () => {
       dialogContent: undefined,
       dialogAction: undefined,
     });
-  const navigate = useNavigate();
+
   const context: AppContextProp = {
     bgColor: bgColor,
     setBgColor: setBgColor,
@@ -46,6 +46,8 @@ const App = () => {
     dialogContents: dialogContents,
     setDialogContents: setDialogContents,
   };
+  const navigate = useNavigate();
+  const theme = createTheme({ colorSchemes: { dark: true } });
 
   const handleNavigationChange = React.useCallback(
     (_event: React.SyntheticEvent, newPath: string) => {
@@ -58,11 +60,11 @@ const App = () => {
 
   React.useEffect(() => {
     chrome.storage.local.get(["bgColor"], (data) => {
-      if (data.bgColor) setBgColor(data.bgColor);
+      if (data.bgColor && !(data.bgColor === bgColor)) {
+        setBgColor(data.bgColor);
+      }
     });
-  }, []);
-
-  const theme = createTheme({ colorSchemes: { dark: true } });
+  });
 
   return (
     <AppContext.Provider value={context}>

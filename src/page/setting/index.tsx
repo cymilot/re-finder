@@ -2,11 +2,9 @@ import React from "react";
 import {
   Button,
   FormControl,
-  InputLabel,
   List,
   ListItem,
   ListItemText,
-  Menu,
   MenuItem,
   Select,
   SelectChangeEvent,
