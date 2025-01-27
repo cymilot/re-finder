@@ -16,17 +16,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 const Home = () => {
   const [inputValue, setInputValue] = React.useState("");
   const [resultValue, setResultValue] = React.useState("");
-  const [flagValue, setFlagValue] = React.useState({
+  const [flagValues, setFlagValues] = React.useState({
     flagG: true,
     flagM: false,
     flagI: true,
   });
 
-  const handleSearch = async () => {
-    const flag: string[] = [];
-    if (flagValue.flagG) flag.push("g");
-    if (flagValue.flagM) flag.push("m");
-    if (flagValue.flagI) flag.push("i");
+  // 处理搜索逻辑
+  const handleSearch = React.useCallback(async () => {
+    const flags: string[] = [];
+    if (flagValues.flagG) flags.push("g");
+    if (flagValues.flagM) flags.push("m");
+    if (flagValues.flagI) flags.push("i");
 
     const cleanedInputValue = inputValue.trim();
     if (cleanedInputValue === "") {
@@ -45,7 +46,7 @@ const Home = () => {
           {
             action: "search",
             searchInput: cleanedInputValue,
-            flag: flag,
+            flag: flags,
           },
           (res) => {
             if (chrome.runtime.lastError) {
@@ -67,18 +68,10 @@ const Home = () => {
         `${chrome.i18n.getMessage("errSearchFailed")}: ${error.message}`
       );
     }
+  }, [inputValue, flagValues]);
 
-    await chrome.storage.local.set({
-      lastRegex: cleanedInputValue,
-      lastResult: resultValue,
-    });
-  };
-
-  const handleClear = async () => {
-    const tabs = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
+  const handleClear = React.useCallback(async () => {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tabs.length > 0 && tabs[0].id !== undefined) {
       chrome.tabs.sendMessage(tabs[0].id, { action: "clear" });
     }
@@ -87,108 +80,88 @@ const Home = () => {
     setResultValue("");
 
     await chrome.storage.local.remove(["lastRegex", "lastResult"]);
-  };
+  }, []);
 
-  const handleChecked = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ) => {
-    setFlagValue({
-      ...flagValue,
-      [event.target.name]: checked,
-    });
-  };
+  const handleChecked = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      setFlagValues((prev) => ({
+        ...prev,
+        [event.target.name]: checked,
+      }));
+    },
+    []
+  );
 
   React.useEffect(() => {
-    chrome.storage.local.get(["lastRegex", "lastResult"], (data) => {
-      setInputValue(data.lastRegex || "");
-      setResultValue(data.lastResult || "");
+    chrome.storage.local.set({
+      lastRegex: inputValue,
+      lastResult: resultValue,
     });
-  });
+  }, [inputValue, resultValue]);
 
   return (
     <List>
-      <ListItem
-        children={
-          <ListItemText
-            primary={
-              <TextField
-                autoFocus
-                fullWidth
-                label={chrome.i18n.getMessage("labelRegExp")}
-                variant="standard"
-                value={inputValue}
-                onChange={(event) => {
-                  setInputValue(event.target.value);
-                }}
+      <ListItem>
+        <ListItemText>
+          <TextField
+            autoFocus
+            fullWidth
+            label={chrome.i18n.getMessage("labelRegExp")}
+            variant="standard"
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)}
+          />
+        </ListItemText>
+      </ListItem>
+      <ListItem>
+        <FormControl>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={flagValues.flagG}
+                onChange={handleChecked}
+                name="flagG"
               />
             }
+            label={chrome.i18n.getMessage("labelFlagG")}
           />
-        }
-      />
-      <ListItem
-        children={
-          <FormControl>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={flagValue.flagG}
-                  onChange={handleChecked}
-                  name="flagG"
-                />
-              }
-              label={chrome.i18n.getMessage("flagG")}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={flagValue.flagM}
-                  onChange={handleChecked}
-                  name="flagM"
-                />
-              }
-              label={chrome.i18n.getMessage("flagM")}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={flagValue.flagI}
-                  onChange={handleChecked}
-                  name="flagI"
-                />
-              }
-              label={chrome.i18n.getMessage("flagI")}
-            />
-          </FormControl>
-        }
-      />
-      <ListItem
-        children={
-          <ListItemText
-            primary={<Typography children={resultValue} />}
-          />
-        }
-      />
-      <ListItem
-        children={
-          <ListItemText
-            primary={
-              <Button
-                variant="contained"
-                onClick={handleSearch}
-                children={chrome.i18n.getMessage("labelSearch")}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={flagValues.flagM}
+                onChange={handleChecked}
+                name="flagM"
               />
             }
+            label={chrome.i18n.getMessage("labelFlagM")}
           />
-        }
-        secondaryAction={
-          <IconButton
-            aria-label="clear"
-            onClick={handleClear}
-            children={<DeleteIcon />}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={flagValues.flagI}
+                onChange={handleChecked}
+                name="flagI"
+              />
+            }
+            label={chrome.i18n.getMessage("labelFlagI")}
           />
-        }
-      />
+        </FormControl>
+      </ListItem>
+      <ListItem>
+        <ListItemText>
+          <Typography>{resultValue}</Typography>
+        </ListItemText>
+      </ListItem>
+      <ListItem>
+        <ListItemText>
+          <Button variant="contained" onClick={handleSearch}>
+            {chrome.i18n.getMessage("labelSearch")}
+          </Button>
+        </ListItemText>
+        <IconButton aria-label="clear" onClick={handleClear}>
+          <DeleteIcon />
+        </IconButton>
+      </ListItem>
     </List>
   );
 };

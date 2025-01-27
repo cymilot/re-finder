@@ -1,3 +1,5 @@
+import { defaultBgColor } from "./consts";
+
 const getIframeDOM = (iframeNode: HTMLIFrameElement) => {
   try {
     if (iframeNode.contentDocument) {
@@ -24,7 +26,11 @@ const clearHighlight = (dom: Document) => {
   }
 };
 
-const highlight = (dom: Document, regex: RegExp) => {
+const highlight = (
+  dom: Document,
+  regex: RegExp,
+  setting: { [key: string]: any }
+) => {
   let count = 0;
 
   const treeWalker = dom.createTreeWalker(dom.body, NodeFilter.SHOW_TEXT);
@@ -49,31 +55,34 @@ const highlight = (dom: Document, regex: RegExp) => {
 
   for (const range of ranges) {
     const highlightBg = document.createElement("mark");
-    highlightBg.style.backgroundColor = "yellow";
+    highlightBg.style.backgroundColor = setting.bgColor || defaultBgColor;
     highlightBg.className = "highlighting";
     try {
       range.surroundContents(highlightBg);
     } catch (error: any) {
-      console.warn(`${chrome.i18n.getMessage("errRunAction")}: ${error.message}`);
+      console.warn(
+        `${chrome.i18n.getMessage("errRunAction")}: ${error.message}`
+      );
     }
   }
 
   return count;
 };
 
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, _sender, sendResponse) => {
   if (request.action === "search") {
+    const setting = await chrome.storage.local.get(["bgColor"]);
     const pattern = request.searchInput;
     const flag = request.flag.join("");
     const regex = RegExp(pattern, flag);
 
-    let count = highlight(document, regex);
+    let count = highlight(document, regex, setting);
 
     const iframes = Array.from(document.querySelectorAll("iframe"));
     for (const i of iframes) {
       const doc = getIframeDOM(i);
       if (doc) {
-        count += highlight(doc, regex);
+        count += highlight(doc, regex, setting);
       }
     }
 

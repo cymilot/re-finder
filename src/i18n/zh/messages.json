@@ -11,13 +11,13 @@
     "_setting": {
         "message": "设置"
     },
-    "flagG": {
+    "labelFlagG": {
         "message": "全局匹配"
     },
-    "flagM": {
+    "labelFlagM": {
         "message": "多行匹配"
     },
-    "flagI": {
+    "labelFlagI": {
         "message": "不区分大小写"
     },
     "labelRegExp": {
@@ -25,6 +25,15 @@
     },
     "labelSearch": {
         "message": "查找"
+    },
+    "labelBgColor": {
+        "message": "高光背景色"
+    },
+    "labelBgColorPicker": {
+        "message": "颜色选择器"
+    },
+    "labelSet": {
+        "message": "修改"
     },
     "errEmptyInput": {
         "message": "输入不能为空"

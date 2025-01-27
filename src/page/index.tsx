@@ -18,19 +18,19 @@ import Setting from "./setting";
 
 const App = () => {
   const [pathValue, setPathValue] = React.useState("/");
-  const [nameValue, setNameValue] = React.useState("");
+  const [nameValue, setNameValue] = React.useState(chrome.i18n.getMessage("_"));
 
   const navigate = useNavigate();
-  const theme = createTheme({
-    colorSchemes: {
-      dark: true,
-    },
-  });
+  const theme = createTheme();
 
-  React.useEffect(() => {
-    navigate(pathValue);
-    setNameValue(chrome.i18n.getMessage(pathValue.replace("/", "_")));
-  }, [pathValue]);
+  const handleNavigationChange = React.useCallback(
+    (_event: React.SyntheticEvent, newPath: string) => {
+      setNameValue(chrome.i18n.getMessage(newPath.replace("/", "_")));
+      setPathValue(newPath);
+      navigate(newPath);
+    },
+    [navigate]
+  );
 
   return (
     <ThemeProvider theme={theme}>
@@ -38,10 +38,12 @@ const App = () => {
         sx={{
           bgcolor: "background.default",
           color: "text.primary",
-          minWidth: "300px",
+          minWidth: "320px",
         }}>
         <AppBar position="static">
-          <Toolbar children={<Typography children={nameValue} />} />
+          <Toolbar>
+            <Typography>{nameValue}</Typography>
+          </Toolbar>
         </AppBar>
         <Box sx={{ height: "350px", overflowX: "hidden", overflowY: "auto" }}>
           <Routes>
@@ -52,18 +54,16 @@ const App = () => {
         <BottomNavigation
           showLabels
           value={pathValue}
-          onChange={(_event, newPath) => {
-            setPathValue(newPath);
-          }}>
+          onChange={handleNavigationChange}>
           <BottomNavigationAction
             label={chrome.i18n.getMessage("_")}
             icon={<HomeIcon />}
-            value="/"
+            value={"/"}
           />
           <BottomNavigationAction
             label={chrome.i18n.getMessage("_setting")}
             icon={<SettingIcon />}
-            value="/setting"
+            value={"/setting"}
           />
         </BottomNavigation>
       </Box>
