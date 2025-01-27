@@ -46,7 +46,7 @@ const Home = () => {
           {
             action: "search",
             searchInput: cleanedInputValue,
-            flag: flags,
+            flags: flags,
           },
           (res) => {
             if (chrome.runtime.lastError) {

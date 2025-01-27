@@ -69,37 +69,42 @@ const highlight = (
   return count;
 };
 
-chrome.runtime.onMessage.addListener(async (request, _sender, sendResponse) => {
-  if (request.action === "search") {
-    const setting = await chrome.storage.local.get(["bgColor"]);
-    const pattern = request.searchInput;
-    const flag = request.flag.join("");
-    const regex = RegExp(pattern, flag);
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  (async () => {
+    if (request.action === "search") {
+      const setting = await chrome.storage.local.get(["bgColor"]);
+      const pattern = request.searchInput;
+      const flags = request.flags.join("");
+      const regex = RegExp(pattern, flags);
 
-    let count = highlight(document, regex, setting);
+      let count = highlight(document, regex, setting);
 
-    const iframes = Array.from(document.querySelectorAll("iframe"));
-    for (const i of iframes) {
-      const doc = getIframeDOM(i);
-      if (doc) {
-        count += highlight(doc, regex, setting);
+      const iframes = Array.from(document.querySelectorAll("iframe"));
+      for (const i of iframes) {
+        const doc = getIframeDOM(i);
+        if (doc) {
+          count += highlight(doc, regex, setting);
+        }
       }
-    }
 
-    sendResponse({
-      result: `${chrome.i18n.getMessage(
-        "sucSearch1"
-      )} ${count} ${chrome.i18n.getMessage("sucSearch2")}`,
-    });
-  } else if (request.action === "clear") {
-    clearHighlight(document);
+      sendResponse({
+        result: `${chrome.i18n.getMessage(
+          "sucSearch1"
+        )} ${count} ${chrome.i18n.getMessage("sucSearch2")}`,
+      });
+    } else if (request.action === "clear") {
+      clearHighlight(document);
 
-    const iframes = Array.from(document.querySelectorAll("iframe"));
-    for (const i of iframes) {
-      const doc = getIframeDOM(i);
-      if (doc) clearHighlight(doc);
+      const iframes = Array.from(document.querySelectorAll("iframe"));
+      for (const i of iframes) {
+        const doc = getIframeDOM(i);
+        if (doc) clearHighlight(doc);
+      }
+
+      sendResponse();
+    } else {
+      sendResponse({ result: chrome.i18n.getMessage("errActionNotFound") });
     }
-  } else {
-    sendResponse({ result: chrome.i18n.getMessage("errActionNotFound") });
-  }
+  })();
+  return true;
 });
