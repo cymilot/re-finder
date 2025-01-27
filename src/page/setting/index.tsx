@@ -1,22 +1,25 @@
 import React from "react";
 import {
-  Box,
   Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
+  FormControl,
+  InputLabel,
   List,
   ListItem,
   ListItemText,
+  Menu,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Typography,
+  useColorScheme,
 } from "@mui/material";
 import { HexColorPicker } from "react-colorful";
 
-import { defaultBgColor } from "../../consts";
+import { useAppContext } from "../../consts";
 
 const Setting = () => {
-  const [bgColorValue, setBgColorValue] = React.useState(defaultBgColor);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const context = useAppContext();
+  const { mode, setMode } = useColorScheme();
 
   const calculateTextColor = React.useCallback((hex: string): string => {
     let color = hex;
@@ -40,25 +43,19 @@ const Setting = () => {
     return brightness > 186 ? "#000" : "#FFF";
   }, []);
 
-  React.useEffect(() => {
-    chrome.storage.local.get(["bgColor"], (data) => {
-      if (data.bgColor) {
-        setBgColorValue(data.bgColor);
-      }
-    });
-  }, []);
-
-  React.useEffect(() => {
-    chrome.storage.local.set({ bgColor: bgColorValue });
-  }, [bgColorValue]);
-
   const handleOpenDialog = React.useCallback(() => {
-    setIsDialogOpen(true);
-  }, []);
+    context.setDialogContents({
+      dialogTitle: chrome.i18n.getMessage("labelBgColorPicker"),
+      dialogContent: (
+        <HexColorPicker color={context.bgColor} onChange={context.setBgColor} />
+      ),
+    });
+    context.setDialogState(true);
+  }, [context.bgColor]);
 
-  const handleCloseDialog = React.useCallback(() => {
-    setIsDialogOpen(false);
-  }, []);
+  React.useEffect(() => {
+    chrome.storage.local.set({ bgColor: context.bgColor });
+  }, [context.bgColor]);
 
   return (
     <List>
@@ -70,31 +67,33 @@ const Setting = () => {
           variant="contained"
           onClick={handleOpenDialog}
           sx={{
-            backgroundColor: bgColorValue,
-            color: calculateTextColor(bgColorValue),
+            backgroundColor: context.bgColor,
+            color: calculateTextColor(context.bgColor),
           }}>
           {chrome.i18n.getMessage("labelSet")}
         </Button>
-        <Dialog
-          fullWidth
-          maxWidth="xl"
-          open={isDialogOpen}
-          onClose={handleCloseDialog}>
-          <DialogTitle>
-            {chrome.i18n.getMessage("labelBgColorPicker")}
-          </DialogTitle>
-          <DialogContent>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                m: "auto",
-                width: "fit-content",
-              }}>
-              <HexColorPicker color={bgColorValue} onChange={setBgColorValue} />
-            </Box>
-          </DialogContent>
-        </Dialog>
+      </ListItem>
+      <ListItem>
+        <ListItemText>
+          <Typography>{chrome.i18n.getMessage("labelTheme")}</Typography>
+        </ListItemText>
+        <FormControl variant="standard">
+          <Select
+            value={mode}
+            onChange={(event: SelectChangeEvent) => {
+              setMode(event.target.value as "system" | "light" | "dark");
+            }}>
+            <MenuItem value="system">
+              {chrome.i18n.getMessage("labelSystem")}
+            </MenuItem>
+            <MenuItem value="light">
+              {chrome.i18n.getMessage("labelLight")}
+            </MenuItem>
+            <MenuItem value="dark">
+              {chrome.i18n.getMessage("labelDark")}
+            </MenuItem>
+          </Select>
+        </FormControl>
       </ListItem>
     </List>
   );

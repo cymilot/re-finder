@@ -32,6 +32,18 @@
     "labelBgColorPicker": {
         "message": "颜色选择器"
     },
+    "labelTheme": {
+        "message": "主题"
+    },
+    "labelSystem": {
+        "message": "系统"
+    },
+    "labelLight": {
+        "message": "明亮"
+    },
+    "labelDark": {
+        "message": "黑暗"
+    },
     "labelSet": {
         "message": "修改"
     },
