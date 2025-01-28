@@ -35,3 +35,7 @@ export const AppContext = React.createContext<AppContextProp>({
 export const useAppContext = () => React.useContext(AppContext);
 
 export const defaultBgColor = "#ffff00";
+
+export const defaultPageWidth = 300;
+
+export const defaultPageHeight = 454;

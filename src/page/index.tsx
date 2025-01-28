@@ -23,6 +23,8 @@ import {
   AppContext,
   AppContextProp,
   defaultBgColor,
+  defaultPageHeight,
+  defaultPageWidth,
   DialogContentsProp,
 } from "../consts";
 
@@ -65,7 +67,6 @@ const App = () => {
       }
     });
   });
-
   return (
     <AppContext.Provider value={context}>
       <ThemeProvider theme={theme} defaultMode="system">
@@ -73,14 +74,35 @@ const App = () => {
           sx={{
             bgcolor: "background.default",
             color: "text.primary",
-            minWidth: "320px",
+            minWidth: defaultPageWidth,
+            minHeight: defaultPageHeight,
+            height: window.innerHeight,
           }}>
-          <AppBar position="static">
+          <AppBar position="static" sx={{ height: 56 }}>
             <Toolbar>
               <Typography>{name}</Typography>
             </Toolbar>
           </AppBar>
-          <Box sx={{ height: "350px", overflowX: "hidden", overflowY: "auto" }}>
+          <Box
+            sx={{
+              minHeight: defaultPageHeight - 112,
+              height: window.innerHeight - 112,
+              overflowX: "hidden",
+              overflowY: "auto",
+              scrollbarWidth: "thin",
+              "&::-webkit-scrollbar": {
+                width: "0.4em",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "#f1f1f1",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#888",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                background: "#555",
+              },
+            }}>
             <Routes>
               <Route index path="/" element={<Home />} />
               <Route path="/setting" element={<Setting />} />
@@ -106,7 +128,8 @@ const App = () => {
           <BottomNavigation
             showLabels
             value={path}
-            onChange={handleNavigationChange}>
+            onChange={handleNavigationChange}
+            sx={{ height: 56 }}>
             <BottomNavigationAction
               label={chrome.i18n.getMessage("_")}
               icon={<HomeIcon />}
